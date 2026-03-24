@@ -53,6 +53,7 @@ interface VideoPlayerState {
   controlsVisible: boolean
   showThumbnail: boolean
   isInView: boolean
+  isScrolledIn: boolean
 }
 
 interface HoverVideoPlayerProps {
@@ -74,6 +75,7 @@ interface HoverVideoPlayerProps {
   onHoverStart?: () => void
   onHoverEnd?: () => void
   enableControls?: boolean
+  playOnScroll?: boolean
   cropTop?: number
   cropBottom?: number
   isVimeo?: boolean
@@ -201,6 +203,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
   onHoverStart,
   onHoverEnd,
   enableControls = false,
+  playOnScroll = false,
   cropTop = 0,
   cropBottom = 0,
   isVimeo = false,
@@ -224,6 +227,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
     controlsVisible: false,
     showThumbnail: true,
     isInView: false,
+    isScrolledIn: false,
   })
 
   // Mobile detection
@@ -358,7 +362,8 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
       (entries) => {
         entries.forEach((entry) => {
           const isNowInView = entry.isIntersecting
-          setState((prev) => ({ ...prev, isInView: isNowInView }))
+          const isNowScrolledIn = entry.intersectionRatio >= 0.25
+          setState((prev) => ({ ...prev, isInView: isNowInView, isScrolledIn: isNowScrolledIn }))
 
           if (!isNowInView) {
             pauseVideo()
@@ -368,7 +373,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
       {
         root: null,
         rootMargin: "50px",
-        threshold: 0.1,
+        threshold: [0.1, 0.25],
       }
     )
 
@@ -471,6 +476,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
       isMobile: state.isMobile,
       controlsVisible: state.controlsVisible,
       isHovering: state.isHovering,
+      isScrolledIn: state.isScrolledIn,
     })
 
     if (!state.isInView) {
@@ -479,18 +485,19 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
     }
 
     let playbackTimeout: NodeJS.Timeout | undefined
+    const isInteracting = state.isHovering || (playOnScroll && state.isScrolledIn)
 
     if (state.isMobile) {
-      if (state.controlsVisible) {
-        console.log("Mobile controls visible, playing")
+      if (state.controlsVisible || isInteracting) {
+        console.log("Mobile controls visible or interacting, playing")
         playVideo()
       } else {
         console.log("Mobile controls hidden, pausing")
         pauseVideo()
       }
-    } else if (state.isHovering) {
+    } else if (isInteracting) {
       console.log(
-        "Hovering, scheduling playback with delay:",
+        "Interacting, scheduling playback with delay:",
         playbackStartDelay
       )
       playbackTimeout = setTimeout(() => {
@@ -498,7 +505,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
         playVideo()
       }, playbackStartDelay)
     } else {
-      console.log("Not hovering, pausing")
+      console.log("Not interacting, pausing")
       pauseVideo()
     }
 
@@ -595,6 +602,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
     <HoverVideoPlayerContext.Provider value={contextValue}>
       <motion.div
         ref={containerRef}
+        data-active={state.isHovering || (playOnScroll && state.isScrolledIn) ? "true" : "false"}
         className={cn(
           "relative overflow-hidden group cursor-pointer",
           className
@@ -648,11 +656,7 @@ const HoverVideoPlayer: React.FC<HoverVideoPlayerProps> = ({
         {enableControls && (
           <HoverVideoPlayerControls>
             <div className="flex items-center space-x-2">
-              <HoverVideoPlayerPlayPauseButton />
-              <HoverVideoPlayerVolumeControl />
-              <HoverVideoPlayerPiPButton />
             </div>
-            <HoverVideoPlayerProgressBar />
           </HoverVideoPlayerControls>
         )}
       </motion.div>
