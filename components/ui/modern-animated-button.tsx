@@ -62,15 +62,15 @@ export default function ModernAnimatedButtonVariant1() {
       `}
       </style>
       <button
-        className="rotation-animation conic-gradient transform-gpu cursor-pointer rounded-full p-[2px] shadow-[0_0_20px_0_rgba(245,48,107,0.1)] hue-rotate-[190deg] invert transition-all hover:bg-[#782a2b] hover:shadow-[0_0_20px_3px_rgba(245,49,108,.2)] dark:hue-rotate-0 dark:invert-0"
+        className="rotation-animation conic-gradient transform-gpu cursor-pointer rounded-full p-[2px] shadow-[0_0_20px_0_rgba(241,156,121,0.3)] transition-all hover:shadow-[0_0_20px_3px_rgba(241,156,121,0.4)]"
         style={{
           background:
-            "conic-gradient(from calc(var(--r2) - 80deg) at var(--x) 21px, transparent 0, #eca5a7 20%, transparent 25%), #452324",
+            "conic-gradient(from calc(var(--r2) - 80deg) at var(--x) 21px, transparent 0, #F19C79 20%, transparent 25%), #2d3a1f",
         }}
         type="button"
       >
-        <span className="pointer-events-none flex h-10 flex-nowrap items-center gap-3 rounded-full bg-[#120d0e] px-5 py-2 font-medium text-[#eca5a7] text-base tracking-tighter">
-          <span>Contact Us</span>
+        <span className="pointer-events-none flex h-10 flex-nowrap items-center gap-3 rounded-full bg-[#2d3a1f] px-5 py-2 font-medium text-[#F6F4D2] text-base tracking-tighter">
+          <span className="font-pixel-square">Contact Us</span>
         </span>
       </button>
     </>

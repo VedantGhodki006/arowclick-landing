@@ -107,7 +107,7 @@ export function WavyLine({ className, ...props }: ComponentProps<"div">) {
         <title>Wavy Line</title>
         <path
           ref={path}
-          className="stroke-current dark:text-neutral-200 text-neutral-800 stroke-[1px] fill-none"
+          className="stroke-[#5a6b4a] stroke-[1px] fill-none"
         />
       </svg>
     </div>

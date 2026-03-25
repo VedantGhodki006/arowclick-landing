@@ -64,7 +64,7 @@ function Dock({ className, children }: DockProps) {
   const [width, setWidth] = useState(0) // State to track the width of the dock. This dynamically updates based on the dock's current width.
   const dockRef = useRef<HTMLDivElement>(null) // Reference to the dock element in the DOM. This allows direct manipulation and measurement of the dock.
   const isZooming = useRef(false) // Reference to track if the zooming animation is active. This prevents conflicting animations.
-  const [animatingIndexes, setAnimatingIndexes] = useState<number[]>([]) // State to track which dock items are currently animating. This array holds the indices of animating items.
+  const [animatingIndexes, setAnimatingIndexes] = useState<number[]>([1]) // State to track which dock items are currently animating. This array holds the indices of animating items.
 
   // Callback to toggle the zooming state. This ensures that we don't trigger hover animations while zooming.
   const setIsZooming = useCallback((value: boolean) => {
@@ -98,11 +98,7 @@ function Dock({ className, children }: DockProps) {
         ref={dockRef} // Reference to the dock element
         // className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-end h-14 p-2 gap-3 bg-neutral-50 dark:bg-black bg-opacity-90 rounded-xl"
         className={cn(
-          "sticky top-4 z-50 self-center mx-auto flex items-start justify-center h-14 p-2 gap-3 bg-opacity-90 rounded-xl mt-4 w-max",
-          " dark:bg-neutral-900 bg-neutral-50 p-2 no-underline shadow-sm transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800/80 ",
-          "shadow-[0px_1px_1px_0px_rgba(0,0,0,0.05),0px_1px_1px_0px_rgba(255,252,240,0.5)_inset,0px_0px_0px_1px_hsla(0,0%,100%,0.1)_inset,0px_0px_1px_0px_rgba(28,27,26,0.5)]",
-          "shadow-[rgba(17,24,28,0.08)_0_0_0_1px,rgba(17,24,28,0.08)_0_1px_2px_-1px,rgba(17,24,28,0.04)_0_2px_4px]",
-          "dark:shadow-[0_1px_0_0_rgba(255,255,255,0.03)_inset,0_0_0_1px_rgba(255,255,255,0.03)_inset,0_0_0_1px_rgba(0,0,0,0.1),0_2px_2px_0_rgba(0,0,0,0.1),0_4px_4px_0_rgba(0,0,0,0.1),0_8px_8px_0_rgba(0,0,0,0.1)]",
+          "absolute top-0 z-50 self-center mx-auto flex items-start justify-center h-14 gap-3 mt-0 w-max",
           className
         )}
         // Event handler for mouse movement within the dock
@@ -307,7 +303,7 @@ function DockCard({ children, id }: DockCardProps) {
       {/* Motion button for the card, handling click events and animations */}
       <motion.button
         ref={cardRef} // Reference to the button element
-        className="rounded-xl border h-10 px-2 dark:border-white/5 border-black/5 border-opacity-10 bg-white text-black saturate-90 brightness-90 transition-filter duration-200 hover:saturate-100 hover:brightness-112"
+        className="rounded-xl border h-10 px-2 border-[#2d3a1f]/10 bg-[#F6F4D2] text-[#2d3a1f] saturate-90 brightness-90 transition-filter duration-200 hover:saturate-100 hover:brightness-112"
         onClick={handleClick} // Click handler to start/stop animation
         style={{
           width: width, // Responsive width based on mouse distance
@@ -330,7 +326,7 @@ function DockCard({ children, id }: DockCardProps) {
           >
             <motion.div
               exit={{ transition: { duration: 0 } }} // Exit transition with no duration for immediate removal
-              className="w-1.5 h-1.5 rounded-full dark:bg-white bg-black"
+              className="w-1.5 h-1.5 rounded-full bg-[#F19C79]"
               style={{ opacity }} // Bind opacity to the animated opacity spring
             />
           </motion.div>

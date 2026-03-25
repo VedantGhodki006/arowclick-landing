@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion, useAnimation } from "motion/react"
+import { useMouse } from "@/hooks/use-mouse"
 
 interface GradientStop {
   color: string
@@ -254,12 +255,12 @@ const DotCanvas: React.FC<{
               )
               gradient.addColorStop(
                 0,
-                glowColor.replace("1)", `${dotOpacity * (1 + waveStrength)})`)
+                glowColor.replace(/[\d.]+\)$/g, `${dotOpacity * (1 + waveStrength)})`)
               )
-              gradient.addColorStop(1, glowColor.replace("1)", "0)"))
+              gradient.addColorStop(1, glowColor.replace(/[\d.]+\)$/g, "0)"))
               ctx.fillStyle = gradient
             } else {
-              ctx.fillStyle = dotColor.replace("1)", `${dotOpacity})`)
+              ctx.fillStyle = dotColor.replace(/[\d.]+\)$/g, `${dotOpacity})`)
             }
 
             ctx.beginPath()
@@ -320,7 +321,7 @@ const DotCanvas: React.FC<{
     return (
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 h-full w-full bg-gray-100"
+        className="absolute inset-0 h-full w-full"
         style={{ mixBlendMode: "multiply" }}
       />
     )
@@ -329,40 +330,27 @@ const DotCanvas: React.FC<{
 
 DotCanvas.displayName = "DotCanvas"
 
-const MouseGlow: React.FC<{
-  glowColor: string
-  mousePos: { x: number; y: number }
-}> = React.memo(({ glowColor, mousePos }) => (
-  <>
-    <div
-      className="absolute w-40 h-40 rounded-full pointer-events-none"
-      style={{
-        background: `radial-gradient(circle, ${glowColor.replace(
-          "1)",
-          "0.2)"
-        )} 0%, ${glowColor.replace("1)", "0)")} 70%)`,
-        left: `${mousePos.x * 100}%`,
-        top: `${mousePos.y * 100}%`,
-        transform: "translate(-50%, -50%)",
-        filter: "blur(10px)",
-      }}
-    />
-    <div
-      className="absolute w-20 h-20 rounded-full pointer-events-none"
-      style={{
-        background: `radial-gradient(circle, ${glowColor.replace(
-          "1)",
-          "0.4)"
-        )} 0%, ${glowColor.replace("1)", "0)")} 70%)`,
-        left: `${mousePos.x * 100}%`,
-        top: `${mousePos.y * 100}%`,
-        transform: "translate(-50%, -50%)",
-      }}
-    />
-  </>
-))
+const MouseTracker: React.FC = React.memo(() => {
+  const [mouse, parentRef] = useMouse()
 
-MouseGlow.displayName = "MouseGlow"
+  const translate3d = `translate3d(${mouse.elementX}px, ${mouse.elementY}px, 0)`
+
+  return (
+    <div
+      className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden z-[100]"
+      ref={parentRef}
+    >
+      <div
+        className="-top-3 -left-3 pointer-events-none absolute size-6 rounded-full border border-neutral-500/20 bg-neutral-500/15"
+        style={{
+          transform: translate3d,
+        }}
+      />
+    </div>
+  )
+})
+
+MouseTracker.displayName = "MouseTracker"
 
 const defaultGradients: GradientType[] = [
   {
@@ -495,7 +483,7 @@ export function CanvasFractalGrid({
         />
         {enableNoise && <NoiseOverlay opacity={noiseOpacity} />}
         {enableMouseGlow && (
-          <MouseGlow glowColor={glowColor} mousePos={mousePos} />
+          <MouseTracker />
         )}
       </motion.div>
     </AnimatePresence>
